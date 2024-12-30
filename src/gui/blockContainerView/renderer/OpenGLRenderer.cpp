@@ -1,25 +1,32 @@
 #include "OpenGLRenderer.h"
 
+#include <QFile>
+#include <QTextStream>
+
 unsigned int shaderProgram;
 unsigned int VAO;
 
 // Main Flow
 void OpenGLRenderer::initialize() {
     initializeOpenGLFunctions();
+
+    QFile vertFile(":/shaders/vert.shader");
+    if (!vertFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning() << "Failed to open vertex shader:" << vertFile.fileName();
+    }
+    QTextStream vertStream(&vertFile);
+    std::string vertexShaderString = vertStream.readAll().toStdString();
+    const char* vertexShaderSource = vertexShaderString.c_str();
+    vertFile.close();
     
-    const char *vertexShaderSource = "#version 330 core\n"
-        "layout (location = 0) in vec3 aPos;\n"
-        "void main()\n"
-        "{\n"
-        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-        "}\0";
-    
-    const char *fragmentShaderSource = "#version 330 core\n"
-        "out vec4 FragColor;\n"
-        "void main()\n"
-        "{\n"
-        "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-        "}\n\0";
+    QFile fragFile(":/shaders/frag.shader");
+    if (!fragFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning() << "Failed to open fragment shader:" << fragFile.fileName();
+    }
+    QTextStream fragStream(&fragFile);
+    std::string fragmentShaderString = fragStream.readAll().toStdString();
+    const char* fragmentShaderSource = fragmentShaderString.c_str();
+    fragFile.close();
 
     // set up shaders
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -66,7 +73,7 @@ void OpenGLRenderer::initialize() {
         -0.5f, -0.5f, 0.0f,  // bottom left
         -0.5f,  0.5f, 0.0f   // top left 
     };
-    unsigned int indices[] = {  // note that we start from 0!
+    unsigned int indices[] = {
         0, 1, 3,  // first Triangle
         1, 2, 3   // second Triangle
     };
@@ -88,8 +95,10 @@ void OpenGLRenderer::resize(int w, int h) {
 }
 
 void OpenGLRenderer::render() {
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.83f, 0.83f, 0.83f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    
 
     // draw triangle
     glUseProgram(shaderProgram);
