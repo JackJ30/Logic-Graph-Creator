@@ -1,5 +1,6 @@
 #include <QNativeGestureEvent>
 #include <QGestureEvent>
+#include <qpainter.h>
 #include <sstream>
 #include <iomanip>
 
@@ -112,21 +113,24 @@ void LogicGridWindow::initializeGL() {
 }
 
 void LogicGridWindow::paintGL() {
+    // enclose openGL calls in qPainter native painting
+    QPainter* painter = new QPainter(this);
+    painter->beginNativePainting();
     blockContainerView.getRenderer().render();
+    painter->endNativePainting();
 
-    // // rolling average for frame time
-    // pastFrameTimes.push_back(blockContainerView.getRenderer().getLastFrameTimeMs());
-    // int numPops = pastFrameTimes.size() - numTimesInAverage;
-    // for (int i = 0; i < numPops; ++i) {
-    //     pastFrameTimes.pop_front();
-    // }
-    // float average = std::accumulate(pastFrameTimes.begin(), pastFrameTimes.end(), 0.0f) / (float)pastFrameTimes.size();
-    // std::stringstream stream;
-    // stream << std::fixed << std::setprecision(3) << average;
-    // std::string frameTimeStr = "avg frame: " + stream.str() + "ms";
-
-    // // draw average from time
-    // painter->drawText(QRect(QPoint(0, 0), size()), Qt::AlignTop, QString(frameTimeStr.c_str()));
+    // rolling average for frame time
+    pastFrameTimes.push_back(blockContainerView.getRenderer().getLastFrameTimeMs());
+    int numPops = pastFrameTimes.size() - numTimesInAverage;
+    for (int i = 0; i < numPops; ++i) {
+        pastFrameTimes.pop_front();
+    }
+    float average = std::accumulate(pastFrameTimes.begin(), pastFrameTimes.end(), 0.0f) / (float)pastFrameTimes.size();
+    std::stringstream stream;
+    stream << std::fixed << std::setprecision(3) << average;
+    std::string frameTimeStr = "avg frame: " + stream.str() + "ms";
+    // draw average from time
+    painter->drawText(QRect(QPoint(0, 0), size()), Qt::AlignTop, QString(frameTimeStr.c_str()));
 }
 
 void LogicGridWindow::resizeGL(int w, int h) {

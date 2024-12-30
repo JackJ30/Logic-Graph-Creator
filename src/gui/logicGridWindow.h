@@ -64,7 +64,7 @@ private:
     void updateLoop();
     
     std::list<float> pastFrameTimes;
-    const int numTimesInAverage = 60;
+    const int numTimesInAverage = 5;
 
     // data
     BlockContainerView<OpenGLRenderer> blockContainerView;

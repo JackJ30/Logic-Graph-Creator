@@ -2,7 +2,7 @@
 
 #include <QFile>
 #include <QTextStream>
-#include <bits/types/locale_t.h>
+#include <QElapsedTimer>
 
 unsigned int shaderProgram;
 unsigned int VAO;
@@ -96,6 +96,9 @@ void OpenGLRenderer::resize(int w, int h) {
 }
 
 void OpenGLRenderer::render() {
+    QElapsedTimer timer;
+    timer.start();
+    
     glClearColor(0.83f, 0.83f, 0.83f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -109,6 +112,8 @@ void OpenGLRenderer::render() {
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    lastFrameTime = timer.nsecsElapsed() / 1e6f;
 }
 
 void OpenGLRenderer::setBlockContainer(BlockContainerWrapper* blockContainer) {
