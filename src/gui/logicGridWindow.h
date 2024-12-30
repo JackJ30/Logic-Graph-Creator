@@ -8,15 +8,15 @@
 #include <QPainter>
 #include <QWidget>
 #include <QTimer>
+#include <QOpenGLWidget>
 
-#include <cstdint>
 #include <memory>
 
 #include "blockContainerView/blockContainerView.h"
-#include "blockContainerView/renderer/QtRenderer.h"
+#include "blockContainerView/renderer/OpenGLRenderer.h"
 #include "util/vec2.h"
 
-class LogicGridWindow : public QWidget {
+class LogicGridWindow : public QOpenGLWidget {
     Q_OBJECT
 public:
     LogicGridWindow(QWidget* parent = nullptr);
@@ -41,9 +41,12 @@ public:
 
 
 protected:
+
+    void initializeGL() override;
+    void paintGL() override;
+    void resizeGL(int w, int h) override;
+
     // events
-    void paintEvent(QPaintEvent* event) override;
-    void resizeEvent(QResizeEvent* event) override;
     void wheelEvent(QWheelEvent* event) override;
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent* event) override;
@@ -64,7 +67,7 @@ private:
     const int numTimesInAverage = 60;
 
     // data
-    BlockContainerView<QtRenderer> blockContainerView;
+    BlockContainerView<OpenGLRenderer> blockContainerView;
     bool mouseControls;
 
     // ui elements

@@ -2,7 +2,6 @@
 #include <QHBoxLayout>
 #include <QTreeView>
 
-#include <iostream>
 #include <memory>
 
 #include "logicGridWindow.h"
@@ -23,6 +22,13 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     logicGridWindow->setBlockContainer(blockContainerWrapper);
     logicGridWindow->setEvaluator(evaluator);
     logicGridWindow->setSelector(ui->selectorTreeWidget);
+
+    QSurfaceFormat format;
+    format.setDepthBufferSize(24);
+    format.setStencilBufferSize(8);
+    format.setVersion(4, 3);
+    format.setProfile(QSurfaceFormat::CoreProfile);
+    logicGridWindow->setFormat(format);
 
     connect(ui->StartSim, &QPushButton::clicked, this, &MainWindow::setSimState);
 

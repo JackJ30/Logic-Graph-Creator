@@ -10,7 +10,7 @@
 // trigger an update, right now the tool system is not. When the tool system
 // is fed an input, we update. The tool system should work similar to viewManager
 
-LogicGridWindow::LogicGridWindow(QWidget* parent) : QWidget(parent), blockContainerView(), mouseControls(true), treeWidget(nullptr) {
+LogicGridWindow::LogicGridWindow(QWidget* parent) : QOpenGLWidget(parent), blockContainerView(), mouseControls(true), treeWidget(nullptr) {
     // QT
     setFocusPolicy(Qt::StrongFocus);
     grabGesture(Qt::PinchGesture);
@@ -28,10 +28,6 @@ LogicGridWindow::LogicGridWindow(QWidget* parent) : QWidget(parent), blockContai
 
     // ViewManager
     blockContainerView.getViewManager().setAspectRatio(w / h);
-
-    // Renderer
-    blockContainerView.getRenderer().resize(w, h);
-    blockContainerView.getRenderer().initializeTileSet(":logicTiles.png");
 }
 
 // update loop
@@ -111,34 +107,31 @@ bool LogicGridWindow::event(QEvent* event) {
     return QWidget::event(event);
 }
 
-void LogicGridWindow::paintEvent(QPaintEvent* event) {
-    QPainter* painter = new QPainter(this);
-    
-    blockContainerView.getRenderer().render(painter);
-
-    // rolling average for frame time
-    pastFrameTimes.push_back(blockContainerView.getRenderer().getLastFrameTimeMs());
-    int numPops = pastFrameTimes.size() - numTimesInAverage;
-    for (int i = 0; i < numPops; ++i) {
-        pastFrameTimes.pop_front();
-    }
-    float average = std::accumulate(pastFrameTimes.begin(), pastFrameTimes.end(), 0.0f) / (float)pastFrameTimes.size();
-    std::stringstream stream;
-    stream << std::fixed << std::setprecision(3) << average;
-    std::string frameTimeStr = "avg frame: " + stream.str() + "ms";
-
-    // draw average from time
-    painter->drawText(QRect(QPoint(0, 0), size()), Qt::AlignTop, QString(frameTimeStr.c_str()));
-
-    delete painter;
+void LogicGridWindow::initializeGL() {
+    blockContainerView.getRenderer().initialize();
 }
 
-void LogicGridWindow::resizeEvent(QResizeEvent* event) {
-    int w = event->size().width();
-    int h = event->size().height();
+void LogicGridWindow::paintGL() {
+    blockContainerView.getRenderer().render();
 
-    blockContainerView.getRenderer().resize(w, h);
+    // // rolling average for frame time
+    // pastFrameTimes.push_back(blockContainerView.getRenderer().getLastFrameTimeMs());
+    // int numPops = pastFrameTimes.size() - numTimesInAverage;
+    // for (int i = 0; i < numPops; ++i) {
+    //     pastFrameTimes.pop_front();
+    // }
+    // float average = std::accumulate(pastFrameTimes.begin(), pastFrameTimes.end(), 0.0f) / (float)pastFrameTimes.size();
+    // std::stringstream stream;
+    // stream << std::fixed << std::setprecision(3) << average;
+    // std::string frameTimeStr = "avg frame: " + stream.str() + "ms";
+
+    // // draw average from time
+    // painter->drawText(QRect(QPoint(0, 0), size()), Qt::AlignTop, QString(frameTimeStr.c_str()));
+}
+
+void LogicGridWindow::resizeGL(int w, int h) {
     blockContainerView.getViewManager().setAspectRatio((float)w / (float)h);
+    blockContainerView.getRenderer().resize(w, h);
 }
 
 void LogicGridWindow::wheelEvent(QWheelEvent* event) {
