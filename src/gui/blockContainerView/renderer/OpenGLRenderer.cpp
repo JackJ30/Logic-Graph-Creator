@@ -2,6 +2,7 @@
 
 #include <QFile>
 #include <QTextStream>
+#include <bits/types/locale_t.h>
 
 unsigned int shaderProgram;
 unsigned int VAO;
@@ -98,7 +99,11 @@ void OpenGLRenderer::render() {
     glClearColor(0.83f, 0.83f, 0.83f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    
+    // add perspective matrix
+    glUseProgram(shaderProgram);
+    const std::string uViewProjectionName = "viewProjection";
+    int viewProjectionLocation = glGetUniformLocation(shaderProgram, uViewProjectionName.c_str());
+    glUniformMatrix4fv(viewProjectionLocation, 1, GL_FALSE, viewProjection.constData());
 
     // draw triangle
     glUseProgram(shaderProgram);
@@ -115,7 +120,11 @@ void OpenGLRenderer::setEvaluator(Evaluator* evaluator) {
 }
 
 void OpenGLRenderer::updateView(ViewManager* viewManager) {
-    
+    viewProjection.setToIdentity();
+
+    FPosition topLeft = viewManager->getTopLeft();
+    FPosition bottomRight = viewManager->getBottomRight();
+    viewProjection.ortho(topLeft.x, bottomRight.x, bottomRight.y, topLeft.y, -1.0f, 1.0f);
 }
 
 ElementID OpenGLRenderer::addSelectionElement(const SelectionElement& selection) {

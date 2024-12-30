@@ -2,6 +2,7 @@
 #define OpenGLRenderer_h
 
 #include <QOpenGLFunctions_4_3_Core>
+#include <QMatrix4x4>
 
 #include "renderer.h"
 
@@ -37,6 +38,8 @@ class OpenGLRenderer : public Renderer, QOpenGLFunctions_4_3_Core {
     void spawnConfetti(FPosition start) override;
 
  private:
+    QMatrix4x4 viewProjection;
+    
     float lastFrameTime = 0.0f;
 };
 
