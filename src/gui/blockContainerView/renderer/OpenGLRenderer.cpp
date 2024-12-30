@@ -132,6 +132,10 @@ void OpenGLRenderer::updateView(ViewManager* viewManager) {
     viewProjection.ortho(topLeft.x, bottomRight.x, bottomRight.y, topLeft.y, -1.0f, 1.0f);
 }
 
+void OpenGLRenderer::updateBlockContainer(DifferenceSharedPtr diff) {
+    
+}
+
 ElementID OpenGLRenderer::addSelectionElement(const SelectionElement& selection) {
     return 0;
 }

@@ -18,6 +18,7 @@ class OpenGLRenderer : public Renderer, QOpenGLFunctions_4_3_Core {
     void setEvaluator(Evaluator* evaluator) override;
 
     void updateView(ViewManager* viewManager) override;
+    void updateBlockContainer(DifferenceSharedPtr diff) override;
 
     inline float getLastFrameTimeMs() const override { return lastFrameTime; }
 

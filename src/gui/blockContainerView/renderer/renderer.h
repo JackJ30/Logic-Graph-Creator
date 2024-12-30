@@ -67,7 +67,7 @@ public:
     virtual void setEvaluator(Evaluator* evaluator) = 0;
 
     virtual void updateView(ViewManager* viewManager) = 0;
-    // virtual void updateBlockContainer(Difference diff) = 0;
+    virtual void updateBlockContainer(DifferenceSharedPtr diff) = 0;
 
     virtual float getLastFrameTimeMs() const = 0;
 
