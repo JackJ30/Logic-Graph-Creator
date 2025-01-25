@@ -54,8 +54,10 @@ jobs:
     - name: Install Qt
       uses: jurplel/install-qt-action@v4
       with:
-        aqtversion: '==3.1.19'
+        cache: true
         version: '6.8.*'
+        arch: ${{ matrix.arch }}
+        aqtversion: '==3.1.19'
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
