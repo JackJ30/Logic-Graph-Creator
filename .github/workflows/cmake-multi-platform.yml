@@ -45,12 +45,15 @@ jobs:
             c_compiler: cl
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v4
       with:
-        setup-python: 'false'
         version: '6.8.*'
 
     - name: Set reusable strings
